@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.CursorAdapter
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.Closeable
 import java.util.*
@@ -35,12 +36,12 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         next_button.setOnClickListener(this)
         prev_button.setOnClickListener(this)
         play_button.setOnClickListener(this)
-        getContentsInfo()
+        //getContentsInfo()
 
 
-        var fieldIndex = cursor!!.getColumnIndex(MediaStore.Images.Media._ID)
-        var imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor!!.getLong(fieldIndex))
-        imageView.setImageURI(imageUri)
+        //var fieldIndex = cursor!!.getColumnIndex(MediaStore.Images.Media._ID)
+        //var imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor!!.getLong(fieldIndex))
+        //imageView.setImageURI(imageUri)
         // Android 6.0以降の場合
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // パーミッションの許可状態を確認する
@@ -57,10 +58,14 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         }
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            PERMISSIONS_REQUEST_CODE ->
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getContentsInfo()
+                } else {
+                    Toast.makeText(this, "許可をしないとスライドは使えません", Toast.LENGTH_LONG).show()
+                    next_button.isEnabled = false
+                    prev_button.isEnabled = false
+                    play_button.isEnabled = false
                 }
         }
     }
@@ -157,27 +162,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         cursor?.moveToFirst()
 
         Log.d("ここにきているか","koko")
-        /*
-        if (cursor!!.moveToFirst()) {
-            // indexからIDを取得し、そのIDから画像のURIを取得する
 
-            val fieldIndex = cursor?.getColumnIndex(MediaStore.Images.Media._ID)
-            val id = cursor?.getInt(fieldIndex)
-            val imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-
-            imageView.setImageURI(imageUri)
-
-
-            do {
-                val fieldIndex = cursor?.getColumnIndex(MediaStore.Images.Media._ID)
-                val id = cursor?.getLong(fieldIndex)
-                numbers = arrayOf<Int>(id?.toInt())
-            } while (cursor!!.moveToNext())
-            println("aaabbb")
-            println(numbers)
-        }
-        */
-        //cursor?.close()
     }
 
 }
